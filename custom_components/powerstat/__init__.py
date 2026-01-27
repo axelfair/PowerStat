@@ -16,7 +16,15 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up PowerStat from a config entry."""
     coordinator = PowerStatCoordinator(hass, entry)
     
-    # Initial data fetch
+    # 1. Register the static path for the card
+    # This makes the card available at /powerstat/powerstat-card.js
+    hass.http.register_static_path(
+        "/powerstat",
+        hass.config.path("custom_components/powerstat/www/powerstat-card"),
+        True
+    )
+    
+    # 2. Initial data fetch
     await coordinator.async_config_entry_first_refresh()
     
     hass.data.setdefault(DOMAIN, {})
