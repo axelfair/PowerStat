@@ -1,8 +1,7 @@
-import {
-  LitElement,
-  html,
-  css,
-} from "https://unpkg.com/lit-element@2.4.0/lit-element.js?module";
+const LitElement = Object.getPrototypeOf(
+  customElements.get("ha-panel-lovelace")
+).prototype.constructor;
+const { html, css } = LitElement;
 
 class PowerStatCard extends LitElement {
   static get properties() {
