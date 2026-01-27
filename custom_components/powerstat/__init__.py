@@ -2,15 +2,9 @@
 from __future__ import annotations
 
 import logging
+import os
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
-
-from .const import DOMAIN
-from .coordinator import PowerStatCoordinator
-
-_LOGGER = logging.getLogger(__name__)
-
-PLATFORMS = ["sensor"]
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up PowerStat from a config entry."""
@@ -18,11 +12,16 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     
     # 1. Register the static path for the card
     # This makes the card available at /powerstat/powerstat-card.js
+    # We use the integration's directory to ensure it works even on HA Green/OS
+    integration_dir = os.path.dirname(__file__)
+    card_path = os.path.join(integration_dir, "www", "powerstat-card")
+    
     hass.http.register_static_path(
         "/powerstat",
-        hass.config.path("custom_components/powerstat/www/powerstat-card"),
+        card_path,
         True
     )
+    _LOGGER.debug("Registered static path /powerstat for %s", card_path)
     
     # 2. Initial data fetch
     await coordinator.async_config_entry_first_refresh()
