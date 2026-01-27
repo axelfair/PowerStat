@@ -100,7 +100,7 @@ class PowerStatCard extends LitElement {
         <div class="header">
           <div class="room-name">Living Room</div>
           <div class="brain-icon">
-            <ha-icon icon="mdi:brain"></ha-icon>
+            <img src="/local/powerstat-card/logo.png" style="width: 100%; height: 100%; border-radius: 50%;" />
           </div>
         </div>
         <div class="main-display">
