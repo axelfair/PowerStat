@@ -17,6 +17,8 @@ from .const import (
     CONF_CLIMATE_ENTITY,
     CONF_TEMP_SENSORS,
     CONF_PRESENCE_SENSORS,
+    CONF_AWAY_ENTITY,
+    CONF_SLEEP_ENTITY,
     DEFAULT_DECISION_INTERVAL,
 )
 from .engine.planner import PowerStatPlanner
@@ -98,6 +100,8 @@ class PowerStatCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         climate_entity = self.entry.data.get(CONF_CLIMATE_ENTITY)
         temp_sensors = self.entry.data.get(CONF_TEMP_SENSORS, [])
         presence_sensors = self.entry.data.get(CONF_PRESENCE_SENSORS, [])
+        away_entities = self.entry.data.get(CONF_AWAY_ENTITY, [])
+        sleep_entities = self.entry.data.get(CONF_SLEEP_ENTITY, [])
 
         # Climate State
         climate_state = self.hass.states.get(climate_entity)
@@ -120,8 +124,38 @@ class PowerStatCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             state = self.hass.states.get(entity_id)
             presence_data[entity_id] = (state.state == STATE_ON) if state else False
 
+        # Consolidated Away State
+        # If any person/device tracker is 'home', we are NOT away.
+        # Otherwise, if any binary_sensor/input_boolean is 'on', we ARE away.
+        any_person_home = False
+        away_override = False
+        
+        for entity_id in away_entities:
+            state = self.hass.states.get(entity_id)
+            if not state:
+                continue
+            
+            domain = entity_id.split(".")[0]
+            if domain in ["person", "device_tracker"]:
+                if state.state == "home":
+                    any_person_home = True
+            elif state.state == STATE_ON:
+                away_override = True
+
+        is_away = away_override or (len(away_entities) > 0 and not any_person_home)
+
+        # Consolidated Sleep State
+        is_sleep = False
+        for entity_id in sleep_entities:
+            state = self.hass.states.get(entity_id)
+            if state and state.state == STATE_ON:
+                is_sleep = True
+                break
+
         return {
             "climate": climate_data,
             "sensors": sensor_data,
             "presence": presence_data,
+            "is_away": is_away,
+            "is_sleep": is_sleep,
         }

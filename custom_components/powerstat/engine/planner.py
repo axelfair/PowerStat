@@ -31,10 +31,21 @@ class PowerStatPlanner:
             }
 
         # 2. Determine target band based on mode (Home/Away/Sleep)
-        # For now, just a hardcoded target to test the flow
-        target_temp = 21.0
-        hvac_mode = "off"
+        is_away = self.snapshot.get("is_away", False)
+        is_sleep = self.snapshot.get("is_sleep", False)
         
+        # Default targets (these will be moved to user-configurable settings later)
+        target_temp = 21.0
+        reason = "Mode: Home"
+        
+        if is_away:
+            target_temp = 18.0
+            reason = "Mode: Away (Eco)"
+        elif is_sleep:
+            target_temp = 19.0
+            reason = "Mode: Sleep"
+            
+        hvac_mode = "off"
         if eff_temp < target_temp - 0.5:
             hvac_mode = "heat"
         elif eff_temp > target_temp + 0.5:
@@ -44,7 +55,7 @@ class PowerStatPlanner:
             "effective_temp": eff_temp,
             "hvac_mode": hvac_mode,
             "target_temp": target_temp,
-            "reason": "Deterministic planning logic",
+            "reason": reason,
             "confidence": 100
         }
 

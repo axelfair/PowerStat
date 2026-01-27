@@ -115,10 +115,10 @@ class PowerStatConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                         selector.EntitySelectorConfig(domain="fan", multiple=True)
                     ),
                     vol.Optional(CONF_AWAY_ENTITY): selector.EntitySelector(
-                        selector.EntitySelectorConfig(domain=["person", "input_boolean", "alarm_control_panel", "input_select"])
+                        selector.EntitySelectorConfig(domain=["person", "input_boolean", "alarm_control_panel", "input_select", "binary_sensor"], multiple=True)
                     ),
                     vol.Optional(CONF_SLEEP_ENTITY): selector.EntitySelector(
-                        selector.EntitySelectorConfig(domain=["binary_sensor", "input_boolean"])
+                        selector.EntitySelectorConfig(domain=["binary_sensor", "input_boolean"], multiple=True)
                     ),
                 }
             ),
