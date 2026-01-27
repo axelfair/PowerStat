@@ -2,14 +2,14 @@
   "domain": "powerstat",
   "name": "PowerStat",
   "version": "0.1.0",
-  "documentation": "https://github.com/alex/powerstat",
-  "issue_tracker": "https://github.com/alex/powerstat/issues",
+  "documentation": "https://github.com/axelfair/PowerStat",
+  "issue_tracker": "https://github.com/axelfair/PowerStat/issues",
   "dependencies": [
     "recorder",
     "climate"
   ],
   "codeowners": [
-    "@alex"
+    "@axelfair"
   ],
   "config_flow": true,
   "iot_class": "local_push",

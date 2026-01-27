@@ -46,7 +46,7 @@ class PowerStatBaseSensor(CoordinatorEntity, SensorEntity):
         self._attr_device_info = {
             "identifiers": {(DOMAIN, coordinator.entry.entry_id)},
             "name": "PowerStat",
-            "manufacturer": "Alex",
+            "manufacturer": "axelfair",
         }
 
 class PowerStatStatusSensor(PowerStatBaseSensor):
