@@ -25,14 +25,17 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     card_path = os.path.join(integration_dir, "www", "powerstat-card")
     
     try:
-        hass.http.register_static_path(
-            "/powerstat",
-            card_path,
-            True,
+        await hass.http.async_register_static_paths(
+            [
+                {
+                    "url_path": "/powerstat",
+                    "path": card_path,
+                }
+            ]
         )
-        _LOGGER.debug("Registered static path /powerstat for %s", card_path)
-    except ValueError:
-        _LOGGER.debug("Static path /powerstat already registered")
+        _LOGGER.info("Registered static path /powerstat for %s", card_path)
+    except Exception as err:
+        _LOGGER.warning("Failed to register static path: %s", err)
     
     # 2. Initial data fetch
     await coordinator.async_config_entry_first_refresh()
