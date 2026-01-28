@@ -6,6 +6,12 @@ class PowerStatCard extends HTMLElement {
       this._initialize();
     }
 
+    // Handle missing entity configuration
+    if (!this.config || !this.config.entity) {
+      this._renderPlaceholder();
+      return;
+    }
+
     const entityId = this.config.entity;
     const stateObj = hass.states[entityId];
     
@@ -241,6 +247,39 @@ class PowerStatCard extends HTMLElement {
     return colors[status.toLowerCase()] || '#8e8e93';
   }
 
+  _renderPlaceholder() {
+    this._card.innerHTML = `
+      <style>
+        .placeholder-container {
+          padding: 40px 20px;
+          text-align: center;
+          background: linear-gradient(135deg, #1c1c1e 0%, #2c2c2e 100%);
+          color: #fff;
+        }
+        .placeholder-icon {
+          font-size: 3rem;
+          margin-bottom: 16px;
+          opacity: 0.5;
+        }
+        .placeholder-text {
+          font-size: 1.1rem;
+          margin-bottom: 8px;
+          color: rgba(255, 255, 255, 0.9);
+        }
+        .placeholder-hint {
+          font-size: 0.85rem;
+          color: rgba(255, 255, 255, 0.6);
+          font-family: monospace;
+        }
+      </style>
+      <div class="placeholder-container">
+        <div class="placeholder-icon">🧠</div>
+        <div class="placeholder-text">PowerStat Card</div>
+        <div class="placeholder-hint">Please configure an entity:<br>sensor.powerstat_status</div>
+      </div>
+    `;
+  }
+
   _getModeIcon(mode) {
     const icons = {
       'heat': '🔥',
@@ -252,10 +291,7 @@ class PowerStatCard extends HTMLElement {
   }
 
   setConfig(config) {
-    if (!config.entity) {
-      throw new Error('Please define an entity (e.g., sensor.powerstat_status)');
-    }
-    this.config = config;
+    this.config = config || {};
   }
 
   getCardSize() {
