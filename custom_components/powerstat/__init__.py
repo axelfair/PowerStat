@@ -3,8 +3,16 @@ from __future__ import annotations
 
 import logging
 import os
+
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+
+from .const import DOMAIN
+from .coordinator import PowerStatCoordinator
+
+_LOGGER = logging.getLogger(__name__)
+
+PLATFORMS: list[str] = ["sensor"]
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up PowerStat from a config entry."""
@@ -16,12 +24,15 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     integration_dir = os.path.dirname(__file__)
     card_path = os.path.join(integration_dir, "www", "powerstat-card")
     
-    hass.http.register_static_path(
-        "/powerstat",
-        card_path,
-        True
-    )
-    _LOGGER.debug("Registered static path /powerstat for %s", card_path)
+    try:
+        hass.http.register_static_path(
+            "/powerstat",
+            card_path,
+            True,
+        )
+        _LOGGER.debug("Registered static path /powerstat for %s", card_path)
+    except ValueError:
+        _LOGGER.debug("Static path /powerstat already registered")
     
     # 2. Initial data fetch
     await coordinator.async_config_entry_first_refresh()

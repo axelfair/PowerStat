@@ -22,7 +22,7 @@ class PowerStatCard extends HTMLElement {
     this.content.innerHTML = `
       <div style="display: flex; align-items: center; justify-content: space-between;">
         <div style="font-size: 1.2rem; font-weight: 500;">PowerStat</div>
-        <img src="/local/powerstat-card/logo.png" style="width: 40px; height: 40px; border-radius: 50%;" />
+        <img src="/powerstat/logo.png" style="width: 40px; height: 40px; border-radius: 50%;" />
       </div>
       <div style="margin: 20px 0; text-align: center;">
         <div style="font-size: 3rem; font-weight: 300;">${temp}°C</div>
