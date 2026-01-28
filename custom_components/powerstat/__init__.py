@@ -18,24 +18,30 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up PowerStat from a config entry."""
     coordinator = PowerStatCoordinator(hass, entry)
     
-    # 1. Register the static path for the card
-    # This makes the card available at /powerstat/powerstat-card.js
-    # We use the integration's directory to ensure it works even on HA Green/OS
+    # 1. Copy the card to the www folder so it's accessible
+    # This is more reliable than trying to register static paths across HA versions
+    import shutil
+    
     integration_dir = os.path.dirname(__file__)
-    card_path = os.path.join(integration_dir, "www", "powerstat-card")
+    source_card_dir = os.path.join(integration_dir, "www", "powerstat-card")
+    dest_card_dir = hass.config.path("www", "powerstat-card")
     
     try:
-        await hass.http.async_register_static_paths(
-            [
-                {
-                    "url_path": "/powerstat",
-                    "path": card_path,
-                }
-            ]
-        )
-        _LOGGER.info("Registered static path /powerstat for %s", card_path)
+        # Create www directory if it doesn't exist
+        os.makedirs(dest_card_dir, exist_ok=True)
+        
+        # Copy all files from source to destination
+        if os.path.exists(source_card_dir):
+            for item in os.listdir(source_card_dir):
+                src = os.path.join(source_card_dir, item)
+                dst = os.path.join(dest_card_dir, item)
+                if os.path.isfile(src):
+                    shutil.copy2(src, dst)
+            _LOGGER.info("Copied PowerStat card to %s", dest_card_dir)
+        else:
+            _LOGGER.warning("PowerStat card source directory not found: %s", source_card_dir)
     except Exception as err:
-        _LOGGER.warning("Failed to register static path: %s", err)
+        _LOGGER.error("Failed to copy PowerStat card files: %s", err)
     
     # 2. Initial data fetch
     await coordinator.async_config_entry_first_refresh()
