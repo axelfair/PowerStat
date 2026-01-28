@@ -22,11 +22,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     # This is more reliable than trying to register static paths across HA versions
     import shutil
     
-    integration_dir = os.path.dirname(__file__)
-    source_card_dir = os.path.join(integration_dir, "www", "powerstat-card")
-    dest_card_dir = hass.config.path("www", "powerstat-card")
-    
-    try:
+    def copy_card_files():
+        """Copy card files to www folder (runs in executor thread)."""
+        integration_dir = os.path.dirname(__file__)
+        source_card_dir = os.path.join(integration_dir, "www", "powerstat-card")
+        dest_card_dir = hass.config.path("www", "powerstat-card")
+        
         # Create www directory if it doesn't exist
         os.makedirs(dest_card_dir, exist_ok=True)
         
@@ -37,9 +38,15 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
                 dst = os.path.join(dest_card_dir, item)
                 if os.path.isfile(src):
                     shutil.copy2(src, dst)
-            _LOGGER.info("Copied PowerStat card to %s", dest_card_dir)
+            return dest_card_dir
+        return None
+    
+    try:
+        result = await hass.async_add_executor_job(copy_card_files)
+        if result:
+            _LOGGER.info("Copied PowerStat card to %s", result)
         else:
-            _LOGGER.warning("PowerStat card source directory not found: %s", source_card_dir)
+            _LOGGER.warning("PowerStat card source directory not found")
     except Exception as err:
         _LOGGER.error("Failed to copy PowerStat card files: %s", err)
     
