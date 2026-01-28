@@ -12,6 +12,14 @@ CONF_FANS = "fans"
 CONF_AWAY_ENTITY = "away_entity"
 CONF_SLEEP_ENTITY = "sleep_entity"
 
+# Environmental monitoring (optional)
+CONF_OUTDOOR_TEMP_SENSOR = "outdoor_temp_sensor"
+CONF_OUTDOOR_HUMIDITY_SENSOR = "outdoor_humidity_sensor"
+CONF_WEATHER_ENTITY = "weather_entity"
+CONF_FREE_TEMP_DIFFERENTIAL = "free_temp_differential"
+CONF_WINDOW_GRACE_PERIOD = "window_grace_period"
+CONF_EFFICIENCY_WARNINGS = "efficiency_warnings"
+
 # Settings
 CONF_DECISION_INTERVAL = "decision_interval"
 CONF_MIN_ACTION_INTERVAL = "min_action_interval"
@@ -37,6 +45,9 @@ DEFAULT_CLOSE_STABILISE_PERIOD = 120
 DEFAULT_MANUAL_HOLD_DURATION = 60
 DEFAULT_OVERRIDE_WINDOW = 20
 DEFAULT_PRESENCE_WEIGHT_BOOST = 2.0
+DEFAULT_FREE_TEMP_DIFFERENTIAL = 2.0
+DEFAULT_WINDOW_GRACE_PERIOD = 60
+DEFAULT_EFFICIENCY_WARNINGS = True
 
 # Attributes / Internal constants
 ATTR_REASON = "reason"

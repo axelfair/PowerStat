@@ -152,10 +152,17 @@ class PowerStatCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 is_sleep = True
                 break
 
+        # Environmental Data (outdoor conditions, forecast, windows)
+        from .engine.environment import EnvironmentMonitor
+        
+        env_monitor = EnvironmentMonitor(self.hass, self.entry, {})
+        env_snapshot = env_monitor.build_environment_snapshot()
+
         return {
             "climate": climate_data,
             "sensors": sensor_data,
             "presence": presence_data,
             "is_away": is_away,
             "is_sleep": is_sleep,
+            "environment": env_snapshot,
         }
